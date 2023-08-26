@@ -1,0 +1,3 @@
+<style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+    <item name="android:windowBackground">@drawable-v21/launch_background.xml</item>
+</style>
