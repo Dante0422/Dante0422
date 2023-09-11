@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'qrcodescanner.dart';
-import 'infoform.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,8 +6,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -22,12 +22,17 @@ environment:
   sdk: '>=3.0.5 <4.0.0'
 
 dependencies:
+    
   flutter:
     sdk: flutter
+  geolocator: ^8.2.0
+  geocoding: ^2.0.4
   qr_code_scanner: ^1.0.1
-qr_code_scanner: ^1.5.0
-english_words: ^4.0.0
-cupertino_icons: ^1.0.2
+  qr_flutter: ^4.1.0
+  english_words: ^4.0.0
+  cupertino_icons: ^1.0.2
+  
+
 
 dev_dependencies:
   flutter_test:
@@ -36,8 +41,14 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 
+
+
 flutter:
 
   uses-material-design: true
+  assets:
+  - images/Admin.png
+  - images/Farmer.png
+  - images/durianLogo.png
 
  

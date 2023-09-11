@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeScanner extends StatefulWidget {
@@ -21,9 +22,6 @@ class QRCodeScannerState extends State<QRCodeScanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('QR Code Scanner'),
-      ),
       body: Column(
         children: [
           Expanded(
@@ -31,11 +29,13 @@ class QRCodeScannerState extends State<QRCodeScanner> {
             child: QRView(
               key: qrKey,
               onQRViewCreated: _onQRViewCreated,
+              overlay: QrScannerOverlayShape(
+                  borderRadius: 30,
+                  borderColor: Color.fromARGB(255, 133, 255, 249)),
             ),
           ),
           Expanded(
-            flex: 1,
-            child: Center(
+            child: SizedBox(
               child: Text(
                 'Scanned Data:\n$scannedData',
                 textAlign: TextAlign.center,
@@ -58,6 +58,7 @@ class QRCodeScannerState extends State<QRCodeScanner> {
     setState(() {
       this.controller = controller;
     });
+
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         scannedData = scanData.code ?? '';

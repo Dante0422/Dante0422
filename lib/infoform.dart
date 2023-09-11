@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class InfoForm extends StatefulWidget {
   @override
@@ -7,9 +10,16 @@ class InfoForm extends StatefulWidget {
 
 class _InfoFormState extends State<InfoForm> {
   //for update the value during input
+  TextEditingController farmNameController = TextEditingController();
+  TextEditingController farmDistrictController = TextEditingController();
+  TextEditingController treeAgeController = TextEditingController();
   String? selectedFarmState;
   String? selectedFarmCountry;
   String? selectedTreeType;
+
+  TextEditingController controller = TextEditingController();
+
+  String? qrData;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +42,8 @@ class _InfoFormState extends State<InfoForm> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
+                  controller: farmNameController,
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Farm Name',
                     hintText: 'Required Field',
@@ -45,6 +57,8 @@ class _InfoFormState extends State<InfoForm> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
+                  controller: farmDistrictController,
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Farm District',
                     hintText: 'Required Field',
@@ -58,6 +72,7 @@ class _InfoFormState extends State<InfoForm> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Farm Story',
                     hintText: 'Optional Field',
@@ -130,6 +145,8 @@ class _InfoFormState extends State<InfoForm> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
+                  controller: treeAgeController,
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Tree Age',
                   ),
@@ -176,18 +193,41 @@ class _InfoFormState extends State<InfoForm> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: redirectToResult,
+                  onPressed: () {
+                    setState(() {
+                      // Build the data for the QR code based on the form inputs
+                      qrData = 'Farm Name: ${farmNameController.text}\n'
+                          'Farm District: ${farmDistrictController.text}\n'
+                          'Farm State: $selectedFarmState\n'
+                          'Farm Country: $selectedFarmCountry\n'
+                          'Tree Age: ${treeAgeController.text}\n'
+                          'Tree Type: $selectedTreeType';
+
+                      controller.text = qrData!; // Set text in the controller
+                    });
+                  },
                   child: Text('View Durian QR Code'),
                 ),
+                if (qrData != null)
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: QrImageView(
+                          data: controller.text,
+                          version: QrVersions.auto,
+                          size: 200.0,
+                        ),
+                      ),
+                      Text('QR Code Data:'),
+                      Text(qrData!),
+                    ],
+                  )
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  void redirectToResult() {
-    // Handle redirect to result page...
   }
 }
