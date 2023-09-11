@@ -102,6 +102,7 @@ class _MyAppState extends State<MyApp> {
               bodyColor: Color.fromARGB(255, 255, 255, 255),
             ),
       ),
+      // ignore: unnecessary_null_comparison
       home: selectedRole == null
           ? RoleSelect(
               onRoleSelected: (role) {
