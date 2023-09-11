@@ -18,33 +18,49 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String selectedRole = "Admin"; //Default role for role selection
+
+  void _updateRole(String newRole) {
+    setState(() {
+      selectedRole = newRole;
+    });
+  }
+
   int index = 0; // Track the selected tab index
 
   // Define the screens that correspond to each tab
-  final List<Widget> farmerscreens = [
-    RoleSelect(),
+  final List<Widget> farmerScreens = [
+    HomeScreen(),
     QRCodeScanner(),
     ViewRecord(),
   ];
 
-  final List<Widget> adminscreens = [
-    RoleSelect(),
+  final List<Widget> adminScreens = [
+    HomeScreen(),
     InfoForm(),
     ViewRecord(),
   ];
 
   // Define the titles for each navigation item
-  final List<String> farmernavigationTitles = [
+  final List<String> farmerNavigationTitles = [
     'Home',
     'QR Code Scanner',
     'View Record',
   ];
 
-  final List<String> adminnavigationTitles = [
+  final List<String> adminNavigationTitles = [
     'Home',
     'Info Form',
     'View Record',
   ];
+
+  List<String> getNavigationTitles() {
+    return selectedRole == "Admin"
+        ? adminNavigationTitles
+        : farmerNavigationTitles;
+  }
+
+  //To handle device permission on obtaining location
 
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -86,64 +102,68 @@ class _MyAppState extends State<MyApp> {
               bodyColor: Color.fromARGB(255, 255, 255, 255),
             ),
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            farmernavigationTitles[index],
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.46,
+      home: selectedRole == null
+          ? RoleSelect(
+              onRoleSelected: (role) {
+                _updateRole(role); // Update the selected role in main.dart
+                setState(() {
+                  // Navigate to the appropriate screen based on the selected role
+                  if (role == 'Admin') {
+                    index = 0; // Navigate to the Admin screen
+                  } else if (role == 'Farmer') {
+                    index = 1; // Navigate to the Farmer screen
+                  }
+                });
+              },
+            )
+          : Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  selectedRole,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.46,
+                  ),
+                ),
+                titleTextStyle: TextStyle(color: Colors.black),
+                backgroundColor: Colors.yellow,
+                centerTitle: true,
+                leading: IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: () {
+                    // Implement your sidebar logic here
+                  },
+                ),
+              ),
+              body: farmerScreens[index], // Show the selected screen
+              bottomNavigationBar: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                  indicatorColor: Colors.blue.shade500,
+                  labelTextStyle: MaterialStateProperty.all(
+                    TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  iconTheme: MaterialStateProperty.all(
+                      IconThemeData(color: Colors.white)),
+                ),
+                child: NavigationBar(
+                  backgroundColor:
+                      Color(0xFF434343), // Set bottom nav background color
+                  selectedIndex: index,
+                  onDestinationSelected: (index) =>
+                      setState(() => this.index = index),
+                  destinations: [
+                    for (int i = 0; i < getNavigationTitles().length; i++)
+                      NavigationDestination(
+                        icon: Icon(Icons.home),
+                        label: getNavigationTitles()[i],
+                      ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          titleTextStyle: TextStyle(color: Colors.black),
-          backgroundColor: Colors.yellow,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              // Implement your sidebar logic here
-            },
-          ),
-        ),
-
-        body: farmerscreens[index], // Show the selected screen
-
-        bottomNavigationBar: NavigationBarTheme(
-          data: NavigationBarThemeData(
-            indicatorColor: Colors.blue.shade500,
-            labelTextStyle: MaterialStateProperty.all(
-              TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-            iconTheme:
-                MaterialStateProperty.all(IconThemeData(color: Colors.white)),
-          ),
-          child: NavigationBar(
-            backgroundColor:
-                Color(0xFF434343), // Set bottom nav background color
-            selectedIndex: index,
-            onDestinationSelected: (index) =>
-                setState(() => this.index = index),
-
-            destinations: [
-              NavigationDestination(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.qr_code),
-                label: 'Scan',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.description),
-                label: 'View Record',
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RoleSelect extends StatefulWidget {
+  final Function(String) onRoleSelected;
+
+  RoleSelect({required this.onRoleSelected});
+
   @override
   RoleSelectState createState() => RoleSelectState();
 }
@@ -30,7 +34,7 @@ class RoleSelectState extends State<RoleSelect> {
                 width: 225,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Add your onPressed logic here
+                    widget.onRoleSelected("Admin");
                   },
                   style: ElevatedButton.styleFrom(
                     primary: const Color.fromARGB(255, 180, 180, 180),
@@ -73,7 +77,7 @@ class RoleSelectState extends State<RoleSelect> {
                 width: 225,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Add your onPressed logic here
+                    widget.onRoleSelected("Farmer");
                   },
                   style: ElevatedButton.styleFrom(
                     primary: const Color.fromARGB(255, 180, 180, 180),
