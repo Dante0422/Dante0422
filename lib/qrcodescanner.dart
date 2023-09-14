@@ -12,6 +12,7 @@ class QRCodeScannerState extends State<QRCodeScanner> {
 
   QRViewController? controller;
   String scannedData = '';
+  String geolocationData = '';
 
   @override
   void dispose() {
@@ -38,6 +39,16 @@ class QRCodeScannerState extends State<QRCodeScanner> {
             child: SizedBox(
               child: Text(
                 'Scanned Data:\n$scannedData',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ),
+          // Geolocation display
+          Expanded(
+            child: SizedBox(
+              child: Text(
+                'Geolocation Data:\n$geolocationData',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
               ),

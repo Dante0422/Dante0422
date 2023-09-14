@@ -18,7 +18,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String selectedRole = "Admin"; //Default role for role selection
+  String? selectedRole; //Default role for role selection
 
   void _updateRole(String newRole) {
     setState(() {
@@ -50,8 +50,20 @@ class _MyAppState extends State<MyApp> {
 
   final List<String> adminNavigationTitles = [
     'Home',
-    'Info Form',
+    'Create QR',
     'View Record',
+  ];
+
+  List<IconData> adminIcons = [
+    Icons.home,
+    Icons.create,
+    Icons.description,
+  ];
+
+  List<IconData> farmerIcons = [
+    Icons.home,
+    Icons.qr_code,
+    Icons.description,
   ];
 
   List<String> getNavigationTitles() {
@@ -94,6 +106,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    List<IconData> icons = selectedRole == "Admin" ? adminIcons : farmerIcons;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -120,7 +134,7 @@ class _MyAppState extends State<MyApp> {
           : Scaffold(
               appBar: AppBar(
                 title: Text(
-                  selectedRole,
+                  selectedRole!,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 18,
@@ -139,7 +153,10 @@ class _MyAppState extends State<MyApp> {
                   },
                 ),
               ),
-              body: farmerScreens[index], // Show the selected screen
+
+              body: selectedRole == 'Admin'
+                  ? adminScreens[index]
+                  : farmerScreens[index], // Show the selected screen
               bottomNavigationBar: NavigationBarTheme(
                 data: NavigationBarThemeData(
                   indicatorColor: Colors.blue.shade500,
@@ -158,7 +175,7 @@ class _MyAppState extends State<MyApp> {
                   destinations: [
                     for (int i = 0; i < getNavigationTitles().length; i++)
                       NavigationDestination(
-                        icon: Icon(Icons.home),
+                        icon: Icon(icons[i]),
                         label: getNavigationTitles()[i],
                       ),
                   ],
