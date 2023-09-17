@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'login.dart';
 import 'home.dart';
 import 'qrcodescanner.dart';
 import 'infoform.dart';
 import 'viewrecord.dart';
 import 'role_selection.dart';
-import 'qrcodescanner.dart';
+import 'admin_profile.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +17,33 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String? selectedRole; //Default role for role selection
+  String? selectedRole;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        textTheme: Theme.of(context).textTheme.apply(
+              bodyColor: Color.fromARGB(255, 255, 255, 255),
+            ),
+      ),
+      home: selectedRole == null
+          ? RoleSelector()
+          : MainScreen(selectedRole: selectedRole!),
+    );
+  }
+}
+
+//Manages UI display according to the role logged in / signed in
+class RoleSelector extends StatefulWidget {
+  @override
+  _RoleSelectorState createState() => _RoleSelectorState();
+}
+
+class _RoleSelectorState extends State<RoleSelector> {
+  String? selectedRole;
 
   void _updateRole(String newRole) {
     setState(() {
@@ -26,54 +51,17 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  int index = 0; // Track the selected tab index
-
-  // Define the screens that correspond to each tab
-  final List<Widget> farmerScreens = [
-    HomeScreen(),
-    QRCodeScanner(),
-    ViewRecord(),
-  ];
-
-  final List<Widget> adminScreens = [
-    HomeScreen(),
-    InfoForm(),
-    ViewRecord(),
-  ];
-
-  // Define the titles for each navigation item
-  final List<String> farmerNavigationTitles = [
-    'Home',
-    'QR Code Scanner',
-    'View Record',
-  ];
-
-  final List<String> adminNavigationTitles = [
-    'Home',
-    'Create QR',
-    'View Record',
-  ];
-
-  List<IconData> adminIcons = [
-    Icons.home,
-    Icons.create,
-    Icons.description,
-  ];
-
-  List<IconData> farmerIcons = [
-    Icons.home,
-    Icons.qr_code,
-    Icons.description,
-  ];
-
-  List<String> getNavigationTitles() {
-    return selectedRole == "Admin"
-        ? adminNavigationTitles
-        : farmerNavigationTitles;
+  @override
+  Widget build(BuildContext context) {
+    return selectedRole == null
+        ? RoleSelect(
+            onRoleSelected: _updateRole,
+          )
+        : MainScreen(selectedRole: selectedRole ?? '');
   }
 
+  //placed here to initialize context of being built concurrently with the role state
   //To handle device permission on obtaining location
-
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -103,85 +91,190 @@ class _MyAppState extends State<MyApp> {
     }
     return true;
   }
+}
+
+class MainScreen extends StatefulWidget {
+  final String selectedRole;
+
+  MainScreen({required this.selectedRole});
+
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int index = 0;
 
   @override
   Widget build(BuildContext context) {
-    List<IconData> icons = selectedRole == "Admin" ? adminIcons : farmerIcons;
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: Theme.of(context).textTheme.apply(
-              bodyColor: Color.fromARGB(255, 255, 255, 255),
-            ),
+    return Scaffold(
+      appBar: CustomAppBar(selectedRole: widget.selectedRole),
+      drawer: CustomDrawer(selectedRole: widget.selectedRole),
+      body: MainContent(selectedRole: widget.selectedRole, currentIndex: index),
+      bottomNavigationBar: CustomNavigationBar(
+        selectedRole: widget.selectedRole,
+        currentIndex: index,
+        onIndexChanged: (int newIndex) {
+          setState(() {
+            index = newIndex;
+          });
+        },
       ),
-      // ignore: unnecessary_null_comparison
-      home: selectedRole == null
-          ? RoleSelect(
-              onRoleSelected: (role) {
-                _updateRole(role); // Update the selected role in main.dart
-                setState(() {
-                  // Navigate to the appropriate screen based on the selected role
-                  if (role == 'Admin') {
-                    index = 0; // Navigate to the Admin screen
-                  } else if (role == 'Farmer') {
-                    index = 1; // Navigate to the Farmer screen
-                  }
-                });
-              },
-            )
-          : Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  selectedRole!,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.46,
-                  ),
-                ),
-                titleTextStyle: TextStyle(color: Colors.black),
-                backgroundColor: Colors.yellow,
-                centerTitle: true,
-                leading: IconButton(
-                  icon: Icon(Icons.menu),
-                  onPressed: () {
-                    // Implement your sidebar logic here
-                  },
-                ),
-              ),
+    );
+  }
+}
 
-              body: selectedRole == 'Admin'
-                  ? adminScreens[index]
-                  : farmerScreens[index], // Show the selected screen
-              bottomNavigationBar: NavigationBarTheme(
-                data: NavigationBarThemeData(
-                  indicatorColor: Colors.blue.shade500,
-                  labelTextStyle: MaterialStateProperty.all(
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                  iconTheme: MaterialStateProperty.all(
-                      IconThemeData(color: Colors.white)),
-                ),
-                child: NavigationBar(
-                  backgroundColor:
-                      Color(0xFF434343), // Set bottom nav background color
-                  selectedIndex: index,
-                  onDestinationSelected: (index) =>
-                      setState(() => this.index = index),
-                  destinations: [
-                    for (int i = 0; i < getNavigationTitles().length; i++)
-                      NavigationDestination(
-                        icon: Icon(icons[i]),
-                        label: getNavigationTitles()[i],
-                      ),
-                  ],
-                ),
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String? selectedRole;
+
+  CustomAppBar({required this.selectedRole});
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(
+        selectedRole!,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.46,
+        ),
+      ),
+      titleTextStyle: TextStyle(color: Colors.black),
+      backgroundColor: Colors.yellow,
+      centerTitle: true,
+      leading: Builder(
+        builder: (context) {
+          return IconButton(
+            color: const Color.fromARGB(255, 48, 48, 48),
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class CustomDrawer extends StatelessWidget {
+  final String selectedRole;
+
+  CustomDrawer({required this.selectedRole});
+
+  // Function to handle logout and navigate to the role selection screen
+  void _handleLogout(BuildContext context) {
+    selectedRole == '';
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            RoleSelector(), // Navigate back to the role selection screen
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          UserAccountsDrawerHeader(
+            accountName: Text("Your Name"),
+            accountEmail: Text("youremail@example.com"),
+            currentAccountPicture: CircleAvatar(
+              child: Icon(Icons.person),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text(
+              'Profile',
+              style: TextStyle(
+                color: Colors.grey,
               ),
             ),
+            onTap: () {
+              // Navigate to the profile screen
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ProfileSetting(),
+              ));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.logout),
+            title: Text(
+              'Sign Out',
+              style: TextStyle(color: Colors.grey),
+            ),
+            onTap: () {
+              //call logout function and update the context for the navigator (popping)
+              _handleLogout(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MainContent extends StatelessWidget {
+  final String selectedRole;
+  final int currentIndex;
+
+  MainContent({required this.selectedRole, required this.currentIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    // Define screens based on selectedRole
+    final List<Widget> screens = selectedRole == 'Admin'
+        ? [HomeScreen(), InfoForm(), ViewRecord()]
+        : [HomeScreen(), QRCodeScanner(), ViewRecord()];
+
+    return screens[currentIndex];
+  }
+}
+
+class CustomNavigationBar extends StatelessWidget {
+  final String selectedRole;
+  final int currentIndex;
+  final Function(int) onIndexChanged;
+
+  CustomNavigationBar({
+    required this.selectedRole,
+    required this.currentIndex,
+    required this.onIndexChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Define navigation items based on selectedRole
+    final List<String> navigationTitles = selectedRole == 'Admin'
+        ? ['Home', 'Create QR', 'View Record']
+        : ['Home', 'QR Code Scanner', 'View Record'];
+
+    // Define icons based on selectedRole
+    final List<IconData> icons = selectedRole == 'Admin'
+        ? [Icons.home, Icons.create, Icons.description]
+        : [Icons.home, Icons.qr_code, Icons.description];
+
+    return BottomNavigationBar(
+      currentIndex: currentIndex,
+      onTap: onIndexChanged,
+      items: List.generate(
+        navigationTitles.length,
+        (index) => BottomNavigationBarItem(
+          icon: Icon(icons[index]),
+          label: navigationTitles[index],
+        ),
+      ),
     );
   }
 }

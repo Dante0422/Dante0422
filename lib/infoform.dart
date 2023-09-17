@@ -196,7 +196,8 @@ class _InfoFormState extends State<InfoForm> {
                   onPressed: () {
                     setState(() {
                       // Build the data for the QR code based on the form inputs
-                      qrData = 'Farm Name: ${farmNameController.text}\n'
+                      qrData =
+                          'http://i2hub.tarc.edu.my:9100/result.html? Farm Name: ${farmNameController.text}\n'
                           'Farm District: ${farmDistrictController.text}\n'
                           'Farm State: $selectedFarmState\n'
                           'Farm Country: $selectedFarmCountry\n'

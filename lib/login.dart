@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
+import 'main.dart';
+
+class LoginScreen extends StatefulWidget {
+  final String selectedRole; // Add this line
+
+  LoginScreen({required this.selectedRole}); // Add this constructor
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +26,7 @@ class LoginScreen extends StatelessWidget {
                 _buildLogo(),
                 SizedBox(height: 16), // Add some spacing
                 _buildSignInForm(),
-                _buildForgotPasswordAndSignUpText(),
+                _buildForgotPasswordAndSignUpText(context),
                 SizedBox(height: 16), // Add some spacing
               ],
             ),
@@ -30,7 +41,6 @@ class LoginScreen extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       color: Color(0xFF2E2D2D),
-      child: _buildImage("images/durianLogo.png", BoxFit.cover),
     );
   }
 
@@ -130,7 +140,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildForgotPasswordAndSignUpText() {
+  Widget _buildForgotPasswordAndSignUpText(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -148,7 +158,15 @@ class LoginScreen extends StatelessWidget {
         ),
         SizedBox(width: 20),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    MainScreen(selectedRole: widget.selectedRole),
+              ),
+            );
+          },
           child: Text(
             'Sign up',
             style: TextStyle(

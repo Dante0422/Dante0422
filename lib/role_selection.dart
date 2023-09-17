@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
 
 class RoleSelect extends StatefulWidget {
   final Function(String) onRoleSelected;
@@ -20,7 +21,7 @@ class RoleSelectState extends State<RoleSelect> {
             children: [
               Container(
                 alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 20.0),
+                padding: EdgeInsets.symmetric(vertical: 100.0),
                 child: Text(
                   'Select user type',
                   style: TextStyle(
@@ -35,6 +36,13 @@ class RoleSelectState extends State<RoleSelect> {
                 child: ElevatedButton(
                   onPressed: () {
                     widget.onRoleSelected("Admin");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(
+                            selectedRole: 'Admin',
+                          ),
+                        ));
                   },
                   style: ElevatedButton.styleFrom(
                     primary: const Color.fromARGB(255, 180, 180, 180),
@@ -78,6 +86,13 @@ class RoleSelectState extends State<RoleSelect> {
                 child: ElevatedButton(
                   onPressed: () {
                     widget.onRoleSelected("Farmer");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(
+                            selectedRole: 'Farmer',
+                          ),
+                        ));
                   },
                   style: ElevatedButton.styleFrom(
                     primary: const Color.fromARGB(255, 180, 180, 180),
