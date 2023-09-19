@@ -5,7 +5,7 @@ class ProfileSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Profile'),
+        title: Text('User Profile'),
         actions: [
           IconButton(
             icon: Icon(Icons.edit),

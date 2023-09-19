@@ -2,7 +2,7 @@
     package="com.example.MyApp">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:name="${applicationName}"
         android:label="scanner_mobile_app"

@@ -60,9 +60,7 @@ class _RoleSelectorState extends State<RoleSelector> {
         : MainScreen(selectedRole: selectedRole ?? '');
   }
 
-  //placed here to initialize context of being built concurrently with the role state
-  //To handle device permission on obtaining location
-  Future<bool> _handleLocationPermission() async {
+  Future<bool> handleLocationPermission(BuildContext context) async {
     bool serviceEnabled;
     LocationPermission permission;
 

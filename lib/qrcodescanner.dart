@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class QRCodeScanner extends StatefulWidget {
   @override
@@ -13,11 +14,57 @@ class QRCodeScannerState extends State<QRCodeScanner> {
   QRViewController? controller;
   String scannedData = '';
   String geolocationData = '';
+  String locationMessage = "";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGeolocationData();
+  }
 
   @override
   void dispose() {
     controller?.dispose();
     super.dispose();
+  }
+
+  void _requestLocationPermission() async {
+    final status = await Permission.location.request();
+    if (status.isGranted) {
+      // Permission granted, fetch geolocation data
+      fetchGeolocationData();
+    } else if (status.isDenied) {
+      // Permission denied
+      setState(() {
+        locationMessage = "Location permission denied.";
+      });
+    } else if (status.isPermanentlyDenied) {
+      // Permission permanently denied, open app settings
+      openAppSettings();
+    }
+  }
+
+  // Function to fetch the device's location
+  void fetchGeolocationData() async {
+    final permissionStatus = await Permission.location.status;
+    if (permissionStatus.isGranted) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.medium,
+        );
+        setState(() {
+          locationMessage =
+              "Latitude: ${position.latitude}, Longitude: ${position.longitude}";
+        });
+      } catch (e) {
+        setState(() {
+          locationMessage = "Error: $e";
+        });
+      }
+    } else {
+      // Location permission not granted, request it
+      _requestLocationPermission();
+    }
   }
 
   @override
@@ -40,7 +87,7 @@ class QRCodeScannerState extends State<QRCodeScanner> {
               child: Text(
                 'Scanned Data:\n$scannedData',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(color: Colors.black, fontSize: 18),
               ),
             ),
           ),
@@ -48,9 +95,9 @@ class QRCodeScannerState extends State<QRCodeScanner> {
           Expanded(
             child: SizedBox(
               child: Text(
-                'Geolocation Data:\n$geolocationData',
+                'Geolocation Data:\n$locationMessage',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(color: Colors.black, fontSize: 18),
               ),
             ),
           ),
