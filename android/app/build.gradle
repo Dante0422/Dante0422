@@ -6,6 +6,13 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+def minSdk = localProperties.getProperty('flutter.minSdkVersion')
+if (minSdk != null) {
+    minSdk = minSdk.toInteger()
+} else {
+    minSdk = 21 // Define a default value if 'flutter.minSdkVersion' is not set in local.properties
+}
+
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
     throw new RuntimeException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
@@ -46,17 +53,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.scanner_mobile_app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        def minSdk = localProperties.getProperty('flutter.minSdkVersion')
-
-    if (minSdk != null) {
-        minSdkVersion minSdk.toInteger()
-    } else {
-        // Define a default value in case 'flutter.minSdkVersion' is not set in local.properties
-        minSdkVersion 21 // or any other version as needed
-    }
-        minSdkVersion localProperties.getProperty('flutter.minSdkVersion').toInteger();
+        minSdkVersion minSdk // Assign the determined minSdkVersion here
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
