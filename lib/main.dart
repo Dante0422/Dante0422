@@ -264,12 +264,16 @@ class CustomNavigationBar extends StatelessWidget {
         : [Icons.home, Icons.qr_code, Icons.description];
 
     return BottomNavigationBar(
+      backgroundColor: Color.fromARGB(255, 67, 67, 67),
       currentIndex: currentIndex,
+      unselectedLabelStyle: TextStyle(color: Colors.white),
+      selectedLabelStyle:
+          TextStyle(color: Color.fromARGB(248, 13, 154, 255)), // Add this line
       onTap: onIndexChanged,
       items: List.generate(
         navigationTitles.length,
         (index) => BottomNavigationBarItem(
-          icon: Icon(icons[index]),
+          icon: Icon(icons[index], color: Color.fromARGB(255, 255, 255, 255)),
           label: navigationTitles[index],
         ),
       ),

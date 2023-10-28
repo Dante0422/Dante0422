@@ -22,6 +22,7 @@ class _InfoFormState extends State<InfoForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF2E2D2D),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
         child: Card(
